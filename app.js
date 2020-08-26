@@ -40,6 +40,7 @@ var generateRandomString = function(length) {
 var stateKey = 'spotify_auth_state';
 
 var app = express();
+app.set('port', (process.env.PORT || 5000));
 
 app.use(express.static(__dirname + '/public'))
    .use(cors())
@@ -148,5 +149,5 @@ app.get('/refresh_token', function(req, res) {
   });
 });
 
-console.log('Listening on 5000');
-app.listen(5000);
+console.log('Listening on ' + app.get('port'));
+app.listen(app.get('port'));
