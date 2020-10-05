@@ -20,7 +20,17 @@ var client_id = `${process.env.CLIENT_ID}`; // Your client id
 var client_secret = `${process.env.CLIENT_SECRET}`; // Your secret
 var redirect_uri = `${process.env.REDIRECT_URI}`; // Your redirect uri
 
-console.log(redirect_uri); // test env vars
+var whitelist = ['http://localhost:3000']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      console(origin);
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
 
 /**
  * Generates a random string containing numbers and letters
@@ -42,9 +52,11 @@ var stateKey = 'spotify_auth_state';
 var app = express();
 app.set('port', (process.env.PORT || 5000));
 
+
 app.use(express.static(__dirname + '/public'))
    .use(cors())
    .use(cookieParser());
+
 
 app.get('/login', function(req, res) {
 
@@ -61,9 +73,12 @@ app.get('/login', function(req, res) {
       redirect_uri: redirect_uri,
       state: state
     }));
+
 });
 
 app.get('/callback', function(req, res) {
+
+  console.log(res);
 
   // your application requests refresh and access tokens
   // after checking the state parameter
@@ -115,6 +130,7 @@ app.get('/callback', function(req, res) {
             access_token: access_token,
             refresh_token: refresh_token
           }));
+          
       } else {
         res.redirect('/#' +
           querystring.stringify({
