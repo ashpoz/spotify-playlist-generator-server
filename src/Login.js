@@ -11,12 +11,22 @@ class Login extends React.Component {
         };
       }
 
+       getHashParams = () => {
+        var hashParams = {};
+        var e, r = /([^&;=]+)=?([^&;]*)/g,
+            q = window.location.hash.substring(1);
+        while ( e = r.exec(q)) {
+           hashParams[e[1]] = decodeURIComponent(e[2]);
+        }
+        return hashParams;
+      }
+
     handleSubmit = (e) => {
         e.preventDefault();
         fetch(`/login`, {
           mode: 'no-cors',
         })
-          .then(response => console.log(response))
+          .then(response => response)
           .then(
             () => {
               this.setState({
@@ -38,7 +48,8 @@ class Login extends React.Component {
              * Obtains parameters from the hash of the URL
              * @return Object
              */
-            function getHashParams() {
+
+            const getHashParams = () => {
               var hashParams = {};
               var e, r = /([^&;=]+)=?([^&;]*)/g,
                   q = window.location.hash.substring(1);
@@ -47,7 +58,6 @@ class Login extends React.Component {
               }
               return hashParams;
             }
-    
             // var userProfileSource = document.getElementById('user-profile-template').innerHTML;
 
                 // userProfileTemplate = Handlebars.compile(userProfileSource),

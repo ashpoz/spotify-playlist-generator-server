@@ -47,6 +47,16 @@ var generateRandomString = function(length) {
   return text;
 };
 
+function getHashParams() {
+  var hashParams = {};
+  var e, r = /([^&;=]+)=?([^&;]*)/g,
+      q = window.location.hash.substring(1);
+  while ( e = r.exec(q)) {
+     hashParams[e[1]] = decodeURIComponent(e[2]);
+  }
+  return hashParams;
+}
+
 var stateKey = 'spotify_auth_state';
 
 var app = express();
@@ -57,6 +67,10 @@ app.use(express.static(__dirname + '/public'))
    .use(cors())
    .use(cookieParser());
 
+
+app.get('/', function (req, res) {
+
+});
 
 app.get('/login', function(req, res) {
 
@@ -78,7 +92,7 @@ app.get('/login', function(req, res) {
 
 app.get('/callback', function(req, res) {
 
-  console.log(res);
+  // console.log(res);
 
   // your application requests refresh and access tokens
   // after checking the state parameter
@@ -121,7 +135,7 @@ app.get('/callback', function(req, res) {
 
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
-          console.log(body);
+          // res.json(body); // print body as json
         });
 
         // we can also pass the token to the browser to make requests from there
@@ -167,3 +181,4 @@ app.get('/refresh_token', function(req, res) {
 
 console.log('Listening on ' + app.get('port'));
 app.listen(app.get('port'));
+
