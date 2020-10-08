@@ -4,7 +4,6 @@
   "description": "Basic examples of the Spotify authorization flows through OAuth 2",
   "version": "0.0.2",
   "private": true,
-  "proxy": "http://localhost:5000",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -25,7 +24,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3",
-    "request": "~2.83.0"
+    "request": "~2.83.0",
+    "spotify-web-api-js": "^1.5.0"
   },
   "engines": {
     "node": "12.x"
