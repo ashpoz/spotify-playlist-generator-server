@@ -1,6 +1,7 @@
 import React from 'react';
 import SpotifyWebApi from "spotify-web-api-js";
 
+
 const spotifyApi = new SpotifyWebApi();
 
 
@@ -31,18 +32,12 @@ class Login extends React.Component {
     return hashParams;
   }
 
-  
-
-  getNowPlaying() {
-    spotifyApi.getMyCurrentPlaybackState()
-      .then((response) => {
+  spotifyLogin() {
+    fetch("http://localhost:5000/login", {
+      mode: "no-cors"
+    })
+      .then(response => {
         console.log(response);
-        this.setState({
-          nowPlaying: {
-            name: response.item.name,
-            albumArt: response.item.album.images[0].url
-          }
-        });
       })
   }
 
@@ -60,11 +55,6 @@ class Login extends React.Component {
   }
 
 
-  // componentDidMount() {
-
-  // }
-
-
   render() {
     return (
       <div className="container">
@@ -72,12 +62,9 @@ class Login extends React.Component {
           <div className="col-12">
             <div id="login">
               <h1>This is an example of the Authorization Code flow</h1>
-              <a href="http://localhost:5000/login" className="btn btn-primary">Log in with Spotify</a>
+              <a onClick={() => this.spotifyLogin()} href="http://localhost:5000/login" className="btn btn-primary">Log in with Spotify</a>
               {this.state.loggedIn &&
                 <>
-                <button onClick={() => this.getNowPlaying()}>
-                  Check Now Playing
-                </button>
                 <button onClick={() => this.searchGenres()}>Search genres</button>
                 </>
               }
