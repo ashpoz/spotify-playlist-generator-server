@@ -20,7 +20,17 @@ var client_id = `${process.env.CLIENT_ID}`; // Your client id
 var client_secret = `${process.env.CLIENT_SECRET}`; // Your secret
 var redirect_uri = `${process.env.REDIRECT_URI}`; // Your redirect uri
 
-console.log(redirect_uri); // test env vars
+var whitelist = ['http://localhost:3000']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      console(origin);
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
 
 /**
  * Generates a random string containing numbers and letters
@@ -37,14 +47,27 @@ var generateRandomString = function(length) {
   return text;
 };
 
+function getHashParams() {
+  var hashParams = {};
+  var e, r = /([^&;=]+)=?([^&;]*)/g,
+      q = window.location.hash.substring(1);
+  while ( e = r.exec(q)) {
+     hashParams[e[1]] = decodeURIComponent(e[2]);
+  }
+  return hashParams;
+}
+
 var stateKey = 'spotify_auth_state';
 
 var app = express();
 app.set('port', (process.env.PORT || 5000));
 
+
 app.use(express.static(__dirname + '/public'))
    .use(cors())
    .use(cookieParser());
+
+
 
 app.get('/login', function(req, res) {
 
@@ -52,7 +75,7 @@ app.get('/login', function(req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email';
+  var scope = 'user-read-private user-read-email user-read-playback-state';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -61,9 +84,12 @@ app.get('/login', function(req, res) {
       redirect_uri: redirect_uri,
       state: state
     }));
+
 });
 
 app.get('/callback', function(req, res) {
+
+  // console.log(res);
 
   // your application requests refresh and access tokens
   // after checking the state parameter
@@ -106,15 +132,16 @@ app.get('/callback', function(req, res) {
 
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
-          console.log(body);
+          // res.json(body); // print body as json
         });
 
         // we can also pass the token to the browser to make requests from there
-        res.redirect('/#' +
+        res.redirect('http://localhost:3000/#' +
           querystring.stringify({
             access_token: access_token,
             refresh_token: refresh_token
           }));
+          
       } else {
         res.redirect('/#' +
           querystring.stringify({
@@ -151,3 +178,4 @@ app.get('/refresh_token', function(req, res) {
 
 console.log('Listening on ' + app.get('port'));
 app.listen(app.get('port'));
+
