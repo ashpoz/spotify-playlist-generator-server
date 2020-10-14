@@ -1,13 +1,12 @@
 import React from 'react';
 import SpotifyWebApi from "spotify-web-api-js";
-import { genres } from "./data/genres";
 
 const spotifyApi = new SpotifyWebApi();
 
 class Search extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { value: '', autocomplete: [], artists: [], formSuccess: false, artistsIds: [], albumsIds: [], artistAlbums: [] };
+    this.state = { value: '', autocomplete: [], artists: [], formSuccess: false, genres: '', albums: [] };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -20,104 +19,119 @@ class Search extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     this.setState({ formSuccess: true })
-    this.setState({ artistAlbums: [] })
-
-    this.searchGenres(this.state.value);
+    this.getRecs(this.state.value);
   }
 
-  searchGenres(value) {
-    spotifyApi.search(`genre:${value}`, ["artist"])
-      .then((response) => {
-        const maxArtists = 10;
-        // sort by popularity
-        const sortedArtists = response.artists.items.sort((a, b) => b.popularity - a.popularity);
-        // grab ids
-        const artistsIds = sortedArtists.map(val => val.id);
-        // artist names
-        // const artistsNames = sortedArtists.map(val => val.name);
-
-        // console.log(artistsNames);
-
-        this.setState({
-          artists: sortedArtists.slice(0, maxArtists),
-          artistsIds: artistsIds.slice(0, maxArtists),
-        });
+  getRecs(value) {
+    spotifyApi.getRecommendations({
+      seed_genres: value
+    })
+    .then((response) => {
+      const sortTracksByPop = response.tracks.sort((a, b) => b.popularity - a.popularity);
+      const albums = sortTracksByPop.map(val => {
+        return val.album;
       })
-      .then(() => {
-        this.searchAlbums(this.state.artistsIds)
-      })
+      return albums;
+    })
+    .then((albums) => {
+      this.setState({ albums: albums })
+      console.log(this.state.albums);
+    })
   }
 
-  getAlbum(arr) {
-    // console.log(arr);
-    // spotifyApi.getAlbums(arr)
-    // .then((response) => {
-    //   console.log(response.name);
-    // })
-  }
-
-  searchAlbums(arr) {
-    const maxAlbums = 2;
-    let artistAlbums = {};
-
-    arr.forEach((el, index) => {
-      let albumsIds;
-      spotifyApi.getArtistAlbums(el, {
-        include_groups: "album",
-        limit: 50
-      })
-        .then((response) => {
-          // grab album ids
-          albumsIds = response.items.map(val => val.id);
-          // console.log(albumsIds);
-          // artistObj[index] = albumsIds;
-          // console.log(Math.floor(albumsIds.length / 3));
-          // console.log(albumsIds.length % 3);
-        })
-        .then(() => {
-          if (albumsIds.length > 20) {
-            let i, j, tempArr, chunk = 20;
-            for (i = 0, j = albumsIds.length; i < j; i += chunk) {
-              tempArr = albumsIds.slice(i, i + chunk);
-              spotifyApi.getAlbums(tempArr)
-                .then((response) => {
-                  const sortedAlbums = response.albums.sort((a, b) => b.popularity - a.popularity);
-                  this.setState({
-                    artistAlbums: this.state.artistAlbums.concat(sortedAlbums.slice(0, maxAlbums))
-                  })
-                  // this.setState(prevState => ({
-                  //   artistAlbums: {
-                  //     ...prevState.artistAlbums,
-                  //     items: sortedAlbums.slice(0, maxAlbums),
-                  //   }
-                  // }));
-                })
-            }
-          } else {
-            spotifyApi.getAlbums(albumsIds)
-              .then((response) => {
-                const sortedAlbums = response.albums.sort((a, b) => b.popularity - a.popularity);
-                // console.log(sortedAlbums);
-                this.setState({
-                  artistAlbums: this.state.artistAlbums.concat(sortedAlbums.slice(0, maxAlbums))
-                })
-              })
-          }
-        })
+  getGenres() {
+    spotifyApi.getAvailableGenreSeeds()
+    .then((response) => {
+      const genres = response.genres;
+      this.setState({ genres: genres })
     })
   }
 
   autocomplete(value) {
     let counter = 0;
     let matches = [];
-    genres.forEach(el => {
-      if (el.genre.toLowerCase().includes(value.toLowerCase()) && counter <= 10) {
+    this.state.genres.forEach(el => {
+      if (el.toLowerCase().includes(value.toLowerCase()) && counter <= 10) {
         counter++;
-        matches.push(el.genre);
+        matches.push(el);
       }
     })
     return matches;
   }
+
+  // searchGenres(value) {
+  //   spotifyApi.search(`genre:${value}`, ["artist"])
+  //     .then((response) => {
+  //       const maxArtists = 10;
+  //       // sort by popularity
+  //       const sortedArtists = response.artists.items.sort((a, b) => b.popularity - a.popularity);
+  //       // grab ids
+  //       const artistsIds = sortedArtists.map(val => val.id);
+  //       // artist names
+  //       // const artistsNames = sortedArtists.map(val => val.name);
+
+  //       // console.log(artistsNames);
+
+  //       this.setState({
+  //         artists: sortedArtists.slice(0, maxArtists),
+  //         artistsIds: artistsIds.slice(0, maxArtists),
+  //       });
+  //     })
+  //     .then(() => {
+  //       this.searchAlbums(this.state.artistsIds)
+  //     })
+  // }
+
+  // searchAlbums(arr) {
+  //   const maxAlbums = 2;
+  //   let artistAlbums = {};
+
+  //   arr.forEach((el, index) => {
+  //     let albumsIds;
+  //     spotifyApi.getArtistAlbums(el, {
+  //       include_groups: "album",
+  //       limit: 50
+  //     })
+  //       .then((response) => {
+  //         // grab album ids
+  //         albumsIds = response.items.map(val => val.id);
+  //         // console.log(albumsIds);
+  //         // artistObj[index] = albumsIds;
+  //         // console.log(Math.floor(albumsIds.length / 3));
+  //         // console.log(albumsIds.length % 3);
+  //       })
+  //       .then(() => {
+  //         if (albumsIds.length > 20) {
+  //           let i, j, tempArr, chunk = 20;
+  //           for (i = 0, j = albumsIds.length; i < j; i += chunk) {
+  //             tempArr = albumsIds.slice(i, i + chunk);
+  //             spotifyApi.getAlbums(tempArr)
+  //               .then((response) => {
+  //                 const sortedAlbums = response.albums.sort((a, b) => b.popularity - a.popularity);
+  //                 this.setState({
+  //                   artistAlbums: this.state.artistAlbums.concat(sortedAlbums.slice(0, maxAlbums))
+  //                 })
+  //                 // this.setState(prevState => ({
+  //                 //   artistAlbums: {
+  //                 //     ...prevState.artistAlbums,
+  //                 //     items: sortedAlbums.slice(0, maxAlbums),
+  //                 //   }
+  //                 // }));
+  //               })
+  //           }
+  //         } else {
+  //           spotifyApi.getAlbums(albumsIds)
+  //             .then((response) => {
+  //               const sortedAlbums = response.albums.sort((a, b) => b.popularity - a.popularity);
+  //               // console.log(sortedAlbums);
+  //               this.setState({
+  //                 artistAlbums: this.state.artistAlbums.concat(sortedAlbums.slice(0, maxAlbums))
+  //               })
+  //             })
+  //         }
+  //       })
+  //   })
+  // }
 
   // showAlbums(arr) {
   //   arr.forEach((el, index) => {
@@ -137,8 +151,9 @@ class Search extends React.Component {
   //   return matches;
   // }
 
-  // componentDidMount() {
-  // }
+  componentDidMount() {
+    this.getGenres();
+  }
 
   render() {
     return (
@@ -167,26 +182,19 @@ class Search extends React.Component {
         <div className="results row pt-4">
           {(this.state.formSuccess) &&
           <>
-              {/* <h3>Artists</h3>
-                  <ul>
-                    {this.state.artists.map((val, index) => {
-                      return(
-                        <li key={index}>
-                          <img className="img-thumbnail" src={val.images[0].url} alt=""/>
-                          <p>{val.name}</p>
-                          <p>popularity: {val.popularity}</p>
-                        </li>
-                      ) 
-                    })}
-                  </ul> */}
               <div className="col-12">
                 <h3>Albums</h3>
               </div>
-              {this.state.artistAlbums.map((val, index) => {
+              {this.state.albums.map((val, index) => {
                 return (
-                  <a href={val.external_urls.spotify} className="col-md-4" key={index} target="_blank" rel="noopener noreferrer">
+                  <a href={val.external_urls.spotify} className="col-md-4 pb-2" key={index} target="_blank" rel="noopener noreferrer">
                     <img className="img-thumbnail" src={val.images[0].url} alt="" />
-                    <p>{val.name}<br></br>popularity: {val.popularity}</p>
+                  <p className="lead mb-0 pt-1"><strong>{val.name}</strong></p>
+                  <p>
+                    {val.artists.map((artist, index) => {
+                      return (index > 0) ? `, ${artist.name}` : artist.name;
+                    })}
+                  </p>
                   </a>
                 )
               })}
