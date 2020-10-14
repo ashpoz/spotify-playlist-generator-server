@@ -8,7 +8,7 @@
  */
 
 const dotenv = require('dotenv');
-dotenv.config();
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 
 var express = require('express'); // Express web server framework
 var request = require('request'); // "Request" library
@@ -16,21 +16,12 @@ var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-var client_id = `${process.env.CLIENT_ID}`; // Your client id
-var client_secret = `${process.env.CLIENT_SECRET}`; // Your secret
-var redirect_uri = `${process.env.REDIRECT_URI}`; // Your redirect uri
+var client_id = `${process.env.CLIENT_ID}`; // client id
+var client_secret = `${process.env.CLIENT_SECRET}`; // secret
+var redirect_uri = `${process.env.REDIRECT_URI}`; // redirect uri
+var app_url = `${process.env.APP_URL}`; // app url
 
-var whitelist = ['http://localhost:3000']
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      console(origin);
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
+console.log(app_url);
 
 /**
  * Generates a random string containing numbers and letters
@@ -47,24 +38,13 @@ var generateRandomString = function(length) {
   return text;
 };
 
-function getHashParams() {
-  var hashParams = {};
-  var e, r = /([^&;=]+)=?([^&;]*)/g,
-      q = window.location.hash.substring(1);
-  while ( e = r.exec(q)) {
-     hashParams[e[1]] = decodeURIComponent(e[2]);
-  }
-  return hashParams;
-}
-
 var stateKey = 'spotify_auth_state';
 
 var app = express();
 app.set('port', (process.env.PORT || 5000));
 
 
-app.use(express.static(__dirname + '/public'))
-   .use(cors())
+app.use(cors())
    .use(cookieParser());
 
 
@@ -76,7 +56,7 @@ app.get('/login', function(req, res) {
 
   // your application requests authorization
   var scope = 'user-read-private user-read-email user-read-playback-state';
-  res.redirect('https://accounts.spotify.com/authorize?' +
+  res.send('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
       client_id: client_id,
@@ -84,6 +64,15 @@ app.get('/login', function(req, res) {
       redirect_uri: redirect_uri,
       state: state
     }));
+
+  // res.redirect('https://accounts.spotify.com/authorize?' +
+  //   querystring.stringify({
+  //     response_type: 'code',
+  //     client_id: client_id,
+  //     scope: scope,
+  //     redirect_uri: redirect_uri,
+  //     state: state
+  //   }));
 
 });
 
@@ -136,14 +125,21 @@ app.get('/callback', function(req, res) {
         });
 
         // we can also pass the token to the browser to make requests from there
-        res.redirect('http://localhost:3000/#' +
+        res.redirect(app_url + '/#' +
           querystring.stringify({
             access_token: access_token,
             refresh_token: refresh_token
           }));
           
+        // res.json(
+        //   { 
+        //     access_token: access_token,
+        //     refresh_token: refresh_token
+        //   })
+
+
       } else {
-        res.redirect('/#' +
+        res.redirect(app_url + '/#' +
           querystring.stringify({
             error: 'invalid_token'
           }));

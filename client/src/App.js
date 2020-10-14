@@ -21,8 +21,6 @@ class App extends React.Component {
     }
     this.state = {
       loggedIn: token ? true : false,
-      nowPlaying: { name: 'Not Checked', albumArt: '' },
-      artists: { items: [] }
     }
   }
   

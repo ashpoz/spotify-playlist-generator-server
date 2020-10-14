@@ -1,1 +1,1 @@
-web: node app.js
+web: NODE_ENV=production.local node index.js
