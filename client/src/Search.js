@@ -2,10 +2,7 @@ import React from 'react';
 import SpotifyWebApi from "spotify-web-api-js";
 import { genres } from "./data/genres";
 
-
 const spotifyApi = new SpotifyWebApi();
-
-
 
 class Search extends React.Component {
   constructor(props) {
@@ -145,7 +142,7 @@ class Search extends React.Component {
 
   render() {
     return (
-      <div className="container">
+      <div className="container pt-5">
         <div className="row">
           <div className="col-12">
             <form onSubmit={this.handleSubmit}>
@@ -153,7 +150,7 @@ class Search extends React.Component {
                 <label htmlFor="searchQuery">Searh genres:</label>
                 <input type="text" className="form-control" id="searchQuery" aria-describedby="searchQuery" placeholder="Search..." value={this.state.value} onChange={this.handleChange} />
                 {(this.state.autocomplete.length > 0) &&
-                  <div className="autocomplete">
+                  <div className="autocomplete pt-4">
                     <h3>Suggestions</h3>
                     <ul>
                       {this.state.autocomplete.map((val, index) => {
@@ -167,7 +164,7 @@ class Search extends React.Component {
             </form>
           </div>
         </div>
-        <div className="results row">
+        <div className="results row pt-4">
           {(this.state.formSuccess) &&
           <>
               {/* <h3>Artists</h3>
@@ -187,11 +184,10 @@ class Search extends React.Component {
               </div>
               {this.state.artistAlbums.map((val, index) => {
                 return (
-                  <div className="col-md-4" key={index}>
+                  <a href={val.external_urls.spotify} className="col-md-4" key={index} target="_blank" rel="noopener noreferrer">
                     <img className="img-thumbnail" src={val.images[0].url} alt="" />
-                    <p>{val.name}</p>
-                    <p>popularity: {val.popularity}</p>
-                  </div>
+                    <p>{val.name}<br></br>popularity: {val.popularity}</p>
+                  </a>
                 )
               })}
               </>
