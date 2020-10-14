@@ -8,7 +8,9 @@
  */
 
 const dotenv = require('dotenv');
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+
+const path = require('path');
 
 var express = require('express'); // Express web server framework
 var request = require('request'); // "Request" library
@@ -44,7 +46,8 @@ var app = express();
 app.set('port', (process.env.PORT || 5000));
 
 
-app.use(cors())
+app.use(express.static(path.join(__dirname, 'client/build')))
+  .use(cors())
    .use(cookieParser());
 
 
