@@ -20,18 +20,6 @@ var client_id = `${process.env.CLIENT_ID}`; // Your client id
 var client_secret = `${process.env.CLIENT_SECRET}`; // Your secret
 var redirect_uri = `${process.env.REDIRECT_URI}`; // Your redirect uri
 
-var whitelist = ['http://localhost:3000']
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      console(origin);
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
-
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
@@ -46,16 +34,6 @@ var generateRandomString = function(length) {
   }
   return text;
 };
-
-function getHashParams() {
-  var hashParams = {};
-  var e, r = /([^&;=]+)=?([^&;]*)/g,
-      q = window.location.hash.substring(1);
-  while ( e = r.exec(q)) {
-     hashParams[e[1]] = decodeURIComponent(e[2]);
-  }
-  return hashParams;
-}
 
 var stateKey = 'spotify_auth_state';
 
