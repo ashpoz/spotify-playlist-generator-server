@@ -8,10 +8,12 @@ const spotifyApi = new SpotifyWebApi();
 class Search extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { value: '', autocomplete: [], artists: [], formSuccess: false, genres: [], albums: [] };
+    this.state = { value: '', autocomplete: [], artists: [], formSuccess: false, genres: [], albums: [], maxResults: 20, resultsCount: 10 };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.selectSuggestion = this.selectSuggestion.bind(this);
+    this.clearQuery = this.clearQuery.bind(this);
+    this.updateNumResults = this.updateNumResults.bind(this);
   }
 
   handleChange(e) {
@@ -25,10 +27,24 @@ class Search extends React.Component {
     e.preventDefault();
     this.setState({ formSuccess: true })
     this.getRecs(this.state.value);
+    this.setState({ autocomplete: [] });
   }
 
   selectSuggestion(e) {
     this.setState({ value: e.target.textContent });
+    this.setState({ formSuccess: true })
+    this.getRecs(this.state.value);
+    this.setState({ autocomplete: [] });
+  }
+
+  clearQuery(e) {
+    e.preventDefault();
+    this.setState({ value: "" });
+    this.setState({ autocomplete: [] });
+  }
+
+  updateNumResults(e) {
+    this.setState({ resultsCount: Number(e.target.value) });
   }
 
   closeDropdown() {
@@ -44,7 +60,8 @@ class Search extends React.Component {
 
   getRecs(value) {
     spotifyApi.getRecommendations({
-      seed_genres: value
+      seed_genres: value,
+      limit: this.state.resultsCount
     })
     .then((response) => {
       const sortTracksByPop = response.tracks.sort((a, b) => b.popularity - a.popularity);
@@ -90,8 +107,17 @@ class Search extends React.Component {
           <div className="col-12">
             <form className="form" onSubmit={this.handleSubmit}>
               <div className="form-row form-group mb-0">
-                <div className="col-12 col-sm-10 w-100">
-                  <input type="text" className="form-control" id="searchQuery" aria-describedby="searchQuery" placeholder="Type in genre" value={this.state.value} onChange={this.handleChange} />
+                <div className="search-input col-10 col-sm-8 col-md-9 w-100">
+                  <input type="text" className="form-control" id="searchQuery" aria-describedby="searchQuery" placeholder="Type in genre" value={this.state.value} onChange={this.handleChange} autocomplete="off" />
+                  {(this.state.value) &&
+                  <button className="search-input__button" onClick={this.clearQuery} type="button">&#10005;</button>  
+                  }
+                </div>
+                <div className="select-input col-2 col-sm-2 col-md-1">
+                  <select className="form-control" name="albumsNum" id="albumsNum" onChange={this.updateNumResults} value={this.state.resultsCount}>
+                    {[...Array(this.state.maxResults)].map((e, index) => <option key={index} value={index + 1}>{index + 1}</option>)
+                    }
+                  </select>
                 </div>
                 <div className="col-12 col-sm-2">
                   <button className="btn btn-primary w-100" type="submit">Search</button>
@@ -104,7 +130,7 @@ class Search extends React.Component {
                       {this.state.autocomplete.map((val, index) => {
                         return (
                           <li key={index}>
-                            <button onClick={this.selectSuggestion}>{val}</button>
+                            <button onClick={this.selectSuggestion} type="button">{val}</button>
                           </li>
                         )
                       })}
@@ -117,13 +143,13 @@ class Search extends React.Component {
         </div>
         <div className="results row pt-4">
           {(this.state.formSuccess) &&
-          <>
+            <>
               <div className="col-12">
                 <h3>Albums</h3>
               </div>
               {this.state.albums.map((val, index) => {
                 return (
-                  <a href={val.external_urls.spotify} className="col-md-4 pb-2" key={index} target="_blank" rel="noopener noreferrer">
+                  <a href={val.external_urls.spotify} className="results__item col-md-4 pb-2" key={index} target="_blank" rel="noopener noreferrer">
                     <img className="img-thumbnail" src={val.images[0].url} alt="" />
                   <p className="lead mb-0 pt-1"><strong>{val.name}</strong></p>
                   <p>
@@ -134,7 +160,7 @@ class Search extends React.Component {
                   </a>
                 )
               })}
-              </>
+            </>
           }
         </div>
       </div>
