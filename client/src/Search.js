@@ -143,7 +143,7 @@ class Search extends React.Component {
         </div>
         <div className="results row pt-4">
           {(this.state.formSuccess) &&
-          <>
+            <>
               <div className="col-12">
                 <h3>Albums</h3>
               </div>
@@ -160,7 +160,7 @@ class Search extends React.Component {
                   </a>
                 )
               })}
-              </>
+            </>
           }
         </div>
       </div>
