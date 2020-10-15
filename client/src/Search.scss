@@ -1,0 +1,29 @@
+.autocomplete {
+    padding: 0;
+    ul {
+        padding-left: 0;
+        list-style: none;
+        border: 1px solid #ced4da;
+        position: absolute;
+        background-color: #fff;
+        z-index: 1;
+        width: 100%;
+        li {
+            button {
+                width: 100%;
+                text-align: left;
+                padding: .375rem .75rem;
+                cursor: pointer;
+                border: none;
+                background-color: #fff;
+                &:hover {
+                    background-color: gray;
+                    color: #fff;
+                }
+            }
+            &:not(:last-child) {
+                border-bottom: 1px solid #ced4da;
+            }
+        }
+    }
+}
