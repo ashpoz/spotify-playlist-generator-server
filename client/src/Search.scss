@@ -27,3 +27,32 @@
         }
     }
 }
+
+.search-input {
+    position: relative;
+    &__button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin-right: 5px;
+        margin-left: 5px;
+        height: 100%;
+        width: 35px;
+        border: none;
+        background-color: inherit;
+    }
+}
+
+.select-input {
+    .form-control {
+        padding: .375rem .25rem;
+    }
+}
+
+.results {
+    &__item {
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}
