@@ -1,0 +1,17 @@
+.btn {
+    height: 100%;
+    padding: 5px 25px;
+}
+
+.btn-primary {
+    transition: background-color .25s ease-in-out;
+    background-color: $green;
+    border: 1px solid $green;
+    border-radius: 0.25rem;
+    color: $white;
+    border: none;
+    &:hover {
+        background-color: $green2;
+        border: 1px solid $green2;   
+    }
+}

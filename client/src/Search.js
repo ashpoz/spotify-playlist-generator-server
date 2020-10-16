@@ -1,14 +1,14 @@
 import React from 'react';
 import SpotifyWebApi from "spotify-web-api-js";
 
-import "./Search.scss";
+import "./scss/components/search.scss";
 
 const spotifyApi = new SpotifyWebApi();
 
 class Search extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { value: '', autocomplete: [], artists: [], formSuccess: false, genres: [], albums: [], maxResults: 20, resultsCount: 10 };
+    this.state = { value: '', autocomplete: [], artists: [], formSuccess: false, genres: [], albums: [], maxResults: 20, resultsCount: 8 };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.selectSuggestion = this.selectSuggestion.bind(this);
@@ -18,7 +18,7 @@ class Search extends React.Component {
 
   handleChange(e) {
     this.setState({ value: e.target.value });
-    this.setState({ 
+    this.setState({
       autocomplete: (e.target.value) ? this.autocomplete(e.target.value) : ""
     });
   }
@@ -31,10 +31,10 @@ class Search extends React.Component {
   }
 
   selectSuggestion(e) {
-    this.setState({ value: e.target.textContent });
     this.setState({ formSuccess: true })
-    this.getRecs(this.state.value);
+    this.setState({ value: e.target.textContent });
     this.setState({ autocomplete: [] });
+    this.getRecs(e.target.textContent);
   }
 
   clearQuery(e) {
@@ -48,9 +48,9 @@ class Search extends React.Component {
   }
 
   closeDropdown() {
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
       let isClickInside = document.querySelector(".autocomplete").contains(e.target);
-    
+
       if (!isClickInside) {
         //the click was outside the specifiedElement, do something
         this.setState({ autocomplete: [] })
@@ -63,24 +63,24 @@ class Search extends React.Component {
       seed_genres: value,
       limit: this.state.resultsCount
     })
-    .then((response) => {
-      const sortTracksByPop = response.tracks.sort((a, b) => b.popularity - a.popularity);
-      const albums = sortTracksByPop.map(val => {
-        return val.album;
+      .then((response) => {
+        const sortTracksByPop = response.tracks.sort((a, b) => b.popularity - a.popularity);
+        const albums = sortTracksByPop.map(val => {
+          return val.album;
+        })
+        return albums;
       })
-      return albums;
-    })
-    .then((albums) => {
-      this.setState({ albums: albums })
-    })
+      .then((albums) => {
+        this.setState({ albums: albums })
+      })
   }
 
   getGenres() {
     spotifyApi.getAvailableGenreSeeds()
-    .then((response) => {
-      const genres = response.genres;
-      this.setState({ genres: genres })
-    })
+      .then((response) => {
+        const genres = response.genres;
+        this.setState({ genres: genres })
+      })
   }
 
   autocomplete(value) {
@@ -102,15 +102,30 @@ class Search extends React.Component {
 
   render() {
     return (
-      <div className="container pt-5">
+      <div className="Search container ptop-4 pbot-4">
         <div className="row">
           <div className="col-12">
             <form className="form" onSubmit={this.handleSubmit}>
-              <div className="form-row form-group mb-0">
+              <div className="form-row form-group">
                 <div className="search-input col-10 col-sm-8 col-md-9 w-100">
                   <input type="text" className="form-control" id="searchQuery" aria-describedby="searchQuery" placeholder="Type in genre" value={this.state.value} onChange={this.handleChange} autocomplete="off" />
                   {(this.state.value) &&
-                  <button className="search-input__button" onClick={this.clearQuery} type="button">&#10005;</button>  
+                    <button className="search-input__button" onClick={this.clearQuery} type="button">&#10005;</button>
+                  }
+                  {(this.state.autocomplete.length > 0) &&
+                    <div className="autocomplete">
+                      <div className="col">
+                        <ul>
+                          {this.state.autocomplete.map((val, index) => {
+                            return (
+                              <li key={index}>
+                                <button onClick={this.selectSuggestion} type="button">{val}</button>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      </div>
+                    </div>
                   }
                 </div>
                 <div className="select-input col-2 col-sm-2 col-md-1">
@@ -123,40 +138,33 @@ class Search extends React.Component {
                   <button className="btn btn-primary w-100" type="submit">Search</button>
                 </div>
               </div>
-                {(this.state.autocomplete.length > 0) &&
-                  <div className="form-row autocomplete">
-                    <div className="col">
-                    <ul>
-                      {this.state.autocomplete.map((val, index) => {
-                        return (
-                          <li key={index}>
-                            <button onClick={this.selectSuggestion} type="button">{val}</button>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  </div>
-                  </div>
-                }
+
             </form>
           </div>
         </div>
-        <div className="results row pt-4">
+        <div className="results row ptop-3">
           {(this.state.formSuccess) &&
             <>
+              {(this.state.albums.length <= 0) &&
               <div className="col-12">
+                <p className="lead">Sorry, no matching results. Please try again.</p>
+              </div>
+              }
+              {(this.state.albums.length > 0) &&
+              <div className="col-12 pbot-1">
                 <h3>Albums</h3>
               </div>
+              }
               {this.state.albums.map((val, index) => {
                 return (
-                  <a href={val.external_urls.spotify} className="results__item col-md-4 pb-2" key={index} target="_blank" rel="noopener noreferrer">
+                  <a href={val.external_urls.spotify} className="results__item col-6 col-sm-4 col-md-3 col-xl-3 pb-2" key={index} target="_blank" rel="noopener noreferrer">
                     <img className="img-thumbnail" src={val.images[0].url} alt="" />
-                  <p className="lead mb-0 pt-1"><strong>{val.name}</strong></p>
-                  <p>
-                    {val.artists.map((artist, index) => {
-                      return (index > 0) ? `, ${artist.name}` : artist.name;
-                    })}
-                  </p>
+                    <h5>{val.name}</h5>
+                    <p>
+                      {val.artists.map((artist, index) => {
+                        return (index > 0) ? `, ${artist.name}` : artist.name;
+                      })}
+                    </p>
                   </a>
                 )
               })}

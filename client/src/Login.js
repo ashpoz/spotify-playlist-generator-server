@@ -1,5 +1,10 @@
 import React from 'react';
 
+import './scss/components/login.scss';
+
+import spotifyLogo from './images/spotify-logo.png';
+
+
 class Login extends React.Component {
 
   async spotifyLogin() {
@@ -11,13 +16,14 @@ class Login extends React.Component {
 
   render() {
     return (
-      <div className="container">
+      <div className="Login container">
         <div className="row">
           <div className="col-12">
-            <div id="login">
-              <h1>Spotify Albums by Genre</h1>
-              <h3>Login to Spotify to continue</h3>
-              <button onClick={() => this.spotifyLogin()} className="btn btn-primary">Log in with Spotify</button>
+            <div>
+              <img className="logo pbot-2" src={spotifyLogo} alt="Logo" />
+              <h1>Spotify Playlist Generator</h1>
+              <p className="lead pbot-1">Login to Spotify to continue</p>
+              <button onClick={() => this.spotifyLogin()} className="btn btn-primary">Log In</button>
             </div>
           </div>
         </div>

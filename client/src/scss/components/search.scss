@@ -1,3 +1,15 @@
+@import "../base/variables.scss";
+
+.Search {
+    .form-row {
+        margin-bottom: 0;
+    }
+    button[type="submit"] {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+}
+
 .autocomplete {
     padding: 0;
     ul {
@@ -5,6 +17,8 @@
         list-style: none;
         border: 1px solid #ced4da;
         position: absolute;
+        left: 0;
+        top: 0;
         background-color: #fff;
         z-index: 1;
         width: 100%;
@@ -17,7 +31,7 @@
                 border: none;
                 background-color: #fff;
                 &:hover {
-                    background-color: gray;
+                    background-color: $gray;
                     color: #fff;
                 }
             }
@@ -51,6 +65,14 @@
 
 .results {
     &__item {
+        padding-bottom: 25px;
+        p {
+            margin-bottom: 0;
+            line-height: 1.333;
+        }
+        img {
+            margin-bottom: 10px;
+        }
         &:hover {
             text-decoration: none;
         }

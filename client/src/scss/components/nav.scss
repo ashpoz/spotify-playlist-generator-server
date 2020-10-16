@@ -1,0 +1,11 @@
+@import "../base/variables.scss";
+
+.navbar {
+    border-bottom: 1px solid $gray;
+    .navbar-brand {
+        font-weight: 600;
+    }
+    .social-icon {
+        width: 25px;
+    }
+}
