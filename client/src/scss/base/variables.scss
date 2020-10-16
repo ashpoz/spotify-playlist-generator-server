@@ -1,0 +1,22 @@
+// colors
+$black: #2f3640;
+$white: #e1e5f5;
+$white2: #ccd6fa;
+$green: #44bd32;
+$green2: #2da01b;
+$gray: #7f8fa6;
+
+@for $i from 0 through 6 {
+    .ptop-#{$i} {
+        padding-top: #{$i}rem;
+    }
+    .pbot-#{$i} {
+        padding-bottom: #{$i}rem;
+    }
+    .pleft-#{$i} {
+        padding-left: #{$i}rem;
+    }
+    .pright-#{$i} {
+        padding-right: #{$i}rem;
+    }
+}

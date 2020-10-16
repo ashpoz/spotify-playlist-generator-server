@@ -1,12 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Route } from "react-router-dom";
-
 import SpotifyWebApi from "spotify-web-api-js";
-import Search from "./Search";
 
+import Nav from "./Nav";
+import Search from "./Search";
 import Login from './Login';
 
-import './App.css';
+import './scss/layout/layout.scss';
 
 const spotifyApi = new SpotifyWebApi();
 
@@ -48,7 +47,7 @@ class App extends React.Component {
     let renderComponent;
 
     if (this.state.loggedIn) {
-      renderComponent = <Search />;
+      renderComponent = <><Nav /><Search /></>;
     } else {
       renderComponent = <Login />;
     }

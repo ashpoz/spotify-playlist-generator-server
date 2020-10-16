@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+    font-family: 'Open Sans', 'Helvetica Neue',
+      sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    @media (min-width: 768px) {
+      font-size: 16px;
+    }
+  }
+  
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+
+  h1, h2 {
+    font-weight: bold;
+  }
+
+  h5 {
+    font-size: 1.25em;
+  }
+
+  a {
+    transition: color .25s ease-in-out;
+    color: inherit;
+    &:hover {
+        color: $white2;
+    }
+  }

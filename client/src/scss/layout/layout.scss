@@ -1,0 +1,18 @@
+  @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
+  
+  // vendor
+  @import "../vendor/bootstrap.scss";
+
+  // base
+  @import "../base/variables.scss";
+  @import "../base/typography.scss";
+  @import "../base/utils.scss";
+
+  // components
+  @import "../components/buttons.scss";
+
+
+  body {
+    background-color: $black;
+    color: $white;
+  }
