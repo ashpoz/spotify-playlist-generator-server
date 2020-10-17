@@ -10,7 +10,7 @@ class Search extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
-      value: '', 
+      value: "", 
       autocomplete: [], 
       artists: [], 
       formSuccess: false, 
@@ -18,7 +18,10 @@ class Search extends React.Component {
       albums: [], 
       maxResults: 20, 
       resultsCount: 5, 
-      modal: false };
+      modal: false,
+      userID: "",
+      albumTracks: {}
+    };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.selectSuggestion = this.selectSuggestion.bind(this);
@@ -91,7 +94,10 @@ class Search extends React.Component {
         return albums;
       })
       .then((albums) => {
+        const albumIds = albums.map(album => album.id);
         this.setState({ albums: albums })
+        this.setState({ albumIds: albumIds })
+        this.getAlbumTracks(albumIds);
       })
   }
 
@@ -101,6 +107,31 @@ class Search extends React.Component {
         const genres = response.genres;
         this.setState({ genres: genres })
       })
+  }
+
+  getUserID() {
+    spotifyApi.getMe()
+    .then((response) => {
+      this.setState({ userID: response.id })
+    })
+  }
+
+  getAlbumTracks(albumArr) {
+    albumArr.forEach(id => {
+      spotifyApi.getAlbumTracks(id)
+      .then((response) => {
+        const trackURIs = response.items.map(track => track.uri);
+        this.setState(prevState => ({
+          albumTracks: {
+            ...prevState.albumTracks,
+            [id]:  trackURIs
+          }
+        }))
+      })
+      .then(() => {
+        console.log(this.state.albumTracks);
+      })
+    })
   }
 
   autocomplete(value) {
@@ -117,6 +148,7 @@ class Search extends React.Component {
 
   componentDidMount() {
     this.getGenres();
+    this.getUserID();
   }
 
   render() {
@@ -177,6 +209,8 @@ class Search extends React.Component {
                 <div>                
                   <button className="btn" onClick={this.selectModal}>Add to Playlist</button>
                   <Modal 
+                    albumTracks={this.state.albumTracks}
+                    userID={this.state.userID}
                     displayModal={this.state.modal}
                     closeModal={this.selectModal}
                   />

@@ -12,6 +12,8 @@ class Modal extends React.Component {
             playlistName: "My New Playlist",
             playlistDescription: "My new playlist description",
             playlistPrivate: false,
+            playlistID: "",
+            formSuccess: false,
             errors: {}
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -35,6 +37,8 @@ class Modal extends React.Component {
             console.log(this.state.playlistName);
             console.log(this.state.playlistDescription);
             console.log(this.state.playlistPrivate);
+            this.createPlaylist();
+
         } else {
             console.log("There was an error");
         }
@@ -60,18 +64,28 @@ class Modal extends React.Component {
     }
 
     createPlaylist() {
-        spotifyApi.createPlaylist("user", {
+        spotifyApi.createPlaylist(this.props.userID, {
             name: this.state.playlistName,
             description: this.state.playlistDescription,
             public: true
         })
           .then((response) => {
             console.log(response);
+            this.setState({ playlistID: response.id})
           })
           .then(() => {
-            // this.setState({ albums: albums })
+              console.log(this.state.playlistID);
+              this.addItemsToPlaylist(this.state.playlistID, this.props.albumTracks);
           })
       }
+
+    addItemsToPlaylist(playlistID, tracksObj) {
+        for (var key of Object.keys(tracksObj)) {
+            let trackURIs = JSON.stringify(tracksObj[key]);
+            console.log(trackURIs);
+            spotifyApi.addTracksToPlaylist(playlistID, tracksObj[key])
+        }
+    }
 
     render() {
         return (
