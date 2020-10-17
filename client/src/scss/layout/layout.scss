@@ -16,3 +16,11 @@
     background-color: $black;
     color: $white;
   }
+
+  form {
+    span.error {
+      display: block;
+      color: $error;
+      margin-top: 5px;
+    }
+  }

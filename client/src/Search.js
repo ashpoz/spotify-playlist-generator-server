@@ -1,5 +1,6 @@
 import React from 'react';
 import SpotifyWebApi from "spotify-web-api-js";
+import Modal from './Modal'
 
 import "./scss/components/search.scss";
 
@@ -8,13 +9,27 @@ const spotifyApi = new SpotifyWebApi();
 class Search extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { value: '', autocomplete: [], artists: [], formSuccess: false, genres: [], albums: [], maxResults: 20, resultsCount: 8 };
+    this.state = { 
+      value: "", 
+      autocomplete: [], 
+      artists: [], 
+      formSuccess: false, 
+      genres: [], 
+      albums: [], 
+      maxResults: 20, 
+      resultsCount: 5, 
+      modal: false,
+      userID: "",
+      albumTracks: {}
+    };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.selectSuggestion = this.selectSuggestion.bind(this);
     this.clearQuery = this.clearQuery.bind(this);
     this.updateNumResults = this.updateNumResults.bind(this);
+    this.createPlaylist = this.createPlaylist.bind(this);
   }
+  
 
   handleChange(e) {
     this.setState({ value: e.target.value });
@@ -25,9 +40,10 @@ class Search extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    this.setState({ formSuccess: true })
+    this.setState({ formSuccess: true });
     this.getRecs(this.state.value);
     this.setState({ autocomplete: [] });
+    this.setState({albumTracks: {}});
   }
 
   selectSuggestion(e) {
@@ -47,12 +63,20 @@ class Search extends React.Component {
     this.setState({ resultsCount: Number(e.target.value) });
   }
 
+  selectModal = (info) => {
+    this.setState({modal: !this.state.modal}) // true/false toggle
+  }
+
+  createPlaylist(e) {
+    console.log(e.target);
+  }
+
   closeDropdown() {
     document.addEventListener('click', function (e) {
       let isClickInside = document.querySelector(".autocomplete").contains(e.target);
 
       if (!isClickInside) {
-        //the click was outside the specifiedElement, do something
+        // the click was outside the specifiedElement, do something
         this.setState({ autocomplete: [] })
       }
     });
@@ -71,7 +95,10 @@ class Search extends React.Component {
         return albums;
       })
       .then((albums) => {
+        const albumIds = albums.map(album => album.id);
         this.setState({ albums: albums })
+        this.setState({ albumIds: albumIds })
+        this.getAlbumTracks(albumIds);
       })
   }
 
@@ -81,6 +108,37 @@ class Search extends React.Component {
         const genres = response.genres;
         this.setState({ genres: genres })
       })
+  }
+
+  getUserID() {
+    spotifyApi.getMe()
+    .then((response) => {
+      this.setState({ userID: response.id })
+    })
+  }
+
+  getAlbumTracks(albumArr) {
+    albumArr.forEach(id => {
+      spotifyApi.getAlbumTracks(id)
+      .then((response) => {
+        const trackURIs = response.items.map(track => track.uri);
+        // this.setState(prevState => ({
+        //   albumTracks: {
+        //     ...prevState.albumTracks,
+        //     [id]:  trackURIs
+        //   }
+        // }))
+        this.setState(prevState => ({
+          albumTracks: {
+            ...prevState.albumTracks,
+            [id]:  trackURIs
+          }
+        }))
+      })
+      // .then(() => {
+      //   console.log(this.state.albumTracks);
+      // })
+    })
   }
 
   autocomplete(value) {
@@ -97,7 +155,7 @@ class Search extends React.Component {
 
   componentDidMount() {
     this.getGenres();
-    // this.closeDropdown();
+    this.getUserID();
   }
 
   render() {
@@ -109,6 +167,7 @@ class Search extends React.Component {
               <div className="form-row form-group">
                 <div className="search-input col-10 col-sm-8 col-md-9 w-100">
                   <input type="text" className="form-control" id="searchQuery" aria-describedby="searchQuery" placeholder="Type in genre" value={this.state.value} onChange={this.handleChange} autocomplete="off" />
+                  {/* <small class="text-muted">Can't decide? Choose random genre for me! <a href="#" className="green-text">Go!</a></small> */}
                   {(this.state.value) &&
                     <button className="search-input__button" onClick={this.clearQuery} type="button">&#10005;</button>
                   }
@@ -130,8 +189,9 @@ class Search extends React.Component {
                 </div>
                 <div className="select-input col-2 col-sm-2 col-md-1">
                   <select className="form-control" name="albumsNum" id="albumsNum" onChange={this.updateNumResults} value={this.state.resultsCount}>
-                    {[...Array(this.state.maxResults)].map((e, index) => <option key={index} value={index + 1}>{index + 1}</option>)
-                    }
+                    {[...Array(this.state.maxResults + 1)].map((val, index) => {
+                      return (index % 5 === 0 && index !== 0) ? <option key={index} value={index}>{index}</option> : "";                 
+                    })}
                   </select>
                 </div>
                 <div className="col-12 col-sm-2">
@@ -151,8 +211,17 @@ class Search extends React.Component {
               </div>
               }
               {(this.state.albums.length > 0) &&
-              <div className="col-12 pbot-1">
-                <h3>Albums</h3>
+              <div className="col-12 pbot-3">
+                <div style={{ textAlign: "center" }}>                
+                  <button className="btn btn-primary" onClick={this.selectModal}>Add to Playlist +</button>
+                  <Modal 
+                    accessToken={this.props.accessToken}
+                    albumTracks={this.state.albumTracks}
+                    userID={this.state.userID}
+                    displayModal={this.state.modal}
+                    closeModal={this.selectModal}
+                  />
+                </div>
               </div>
               }
               {this.state.albums.map((val, index) => {
