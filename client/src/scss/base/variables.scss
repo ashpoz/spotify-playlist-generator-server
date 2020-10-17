@@ -5,6 +5,10 @@ $white2: #ccd6fa;
 $green: #44bd32;
 $green2: #2da01b;
 $gray: #7f8fa6;
+$gray2: #919ba8;
+$light-gray: #dcdde1;
+$error: #c23616;
+
 
 @for $i from 0 through 6 {
     .ptop-#{$i} {
