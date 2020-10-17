@@ -20,6 +20,7 @@ class App extends React.Component {
     }
     this.state = {
       loggedIn: token ? true : false,
+      accessToken: params
     }
   }
   
@@ -47,7 +48,7 @@ class App extends React.Component {
     let renderComponent;
 
     if (this.state.loggedIn) {
-      renderComponent = <><Nav /><Search /></>;
+      renderComponent = <><Nav /><Search accessToken={this.state.accessToken} /></>;
     } else {
       renderComponent = <Login />;
     }

@@ -40,9 +40,10 @@ class Search extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    this.setState({ formSuccess: true })
+    this.setState({ formSuccess: true });
     this.getRecs(this.state.value);
     this.setState({ autocomplete: [] });
+    this.setState({albumTracks: {}});
   }
 
   selectSuggestion(e) {
@@ -121,6 +122,12 @@ class Search extends React.Component {
       spotifyApi.getAlbumTracks(id)
       .then((response) => {
         const trackURIs = response.items.map(track => track.uri);
+        // this.setState(prevState => ({
+        //   albumTracks: {
+        //     ...prevState.albumTracks,
+        //     [id]:  trackURIs
+        //   }
+        // }))
         this.setState(prevState => ({
           albumTracks: {
             ...prevState.albumTracks,
@@ -128,9 +135,9 @@ class Search extends React.Component {
           }
         }))
       })
-      .then(() => {
-        console.log(this.state.albumTracks);
-      })
+      // .then(() => {
+      //   console.log(this.state.albumTracks);
+      // })
     })
   }
 
@@ -204,11 +211,11 @@ class Search extends React.Component {
               </div>
               }
               {(this.state.albums.length > 0) &&
-              <div className="col-12 pbot-1">
-                <h3>Albums</h3>
-                <div>                
-                  <button className="btn" onClick={this.selectModal}>Add to Playlist</button>
+              <div className="col-12 pbot-3">
+                <div style={{ textAlign: "center" }}>                
+                  <button className="btn btn-primary" onClick={this.selectModal}>Add to Playlist +</button>
                   <Modal 
+                    accessToken={this.props.accessToken}
                     albumTracks={this.state.albumTracks}
                     userID={this.state.userID}
                     displayModal={this.state.modal}
