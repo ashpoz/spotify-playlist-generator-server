@@ -1,6 +1,7 @@
 import React from 'react';
 import SpotifyWebApi from "spotify-web-api-js";
 import Modal from './Modal'
+import PlaylistForm from './PlaylistForm';
 
 import "./scss/components/search.scss";
 
@@ -215,12 +216,15 @@ class Search extends React.Component {
                 <div style={{ textAlign: "center" }}>                
                   <button className="btn btn-primary" onClick={this.selectModal}>Add to Playlist +</button>
                   <Modal 
-                    accessToken={this.props.accessToken}
-                    albumTracks={this.state.albumTracks}
-                    userID={this.state.userID}
                     displayModal={this.state.modal}
-                    closeModal={this.selectModal}
-                  />
+                    closeModal={this.selectModal}>
+                    <PlaylistForm
+                     displayModal={this.state.modal}
+                     closeModal={this.selectModal}
+                     accessToken={this.props.accessToken}
+                     albumTracks={this.state.albumTracks}
+                     userID={this.state.userID} />
+                  </Modal>
                 </div>
               </div>
               }
