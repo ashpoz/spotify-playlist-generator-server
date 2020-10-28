@@ -72,16 +72,16 @@ class Search extends React.Component {
     console.log(e.target);
   }
 
-  closeDropdown() {
-    document.addEventListener('click', function (e) {
-      let isClickInside = document.querySelector(".autocomplete").contains(e.target);
+  // closeDropdown() {
+  //   document.addEventListener('click', function (e) {
+  //     let isClickInside = document.querySelector(".autocomplete").contains(e.target);
 
-      if (!isClickInside) {
-        // the click was outside the specifiedElement, do something
-        this.setState({ autocomplete: [] })
-      }
-    });
-  }
+  //     if (!isClickInside) {
+  //       // the click was outside the specifiedElement, do something
+  //       this.setState({ autocomplete: [] })
+  //     }
+  //   });
+  // }
 
   getRecs(value) {
     spotifyApi.getRecommendations({
@@ -167,7 +167,7 @@ class Search extends React.Component {
             <form className="form" onSubmit={this.handleSubmit}>
               <div className="form-row form-group">
                 <div className="search-input col-10 col-sm-8 col-md-9 w-100">
-                  <input type="text" className="form-control" id="searchQuery" aria-describedby="searchQuery" placeholder="Type in genre" value={this.state.value} onChange={this.handleChange} autocomplete="off" />
+                  <input type="text" className="form-control" id="searchQuery" aria-describedby="searchQuery" placeholder="Type in genre" value={this.state.value} onChange={this.handleChange} autoComplete="off" />
                   {/* <small class="text-muted">Can't decide? Choose random genre for me! <a href="#" className="green-text">Go!</a></small> */}
                   {(this.state.value) &&
                     <button className="search-input__button" onClick={this.clearQuery} type="button">&#10005;</button>

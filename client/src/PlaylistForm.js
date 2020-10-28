@@ -63,6 +63,14 @@ class PlaylistForm extends React.Component {
         return formIsValid;
     }
 
+    splitArr(arr, length) {
+        let tempArr = [];
+        for(let i = 0; i < arr.length; i += length) {
+            tempArr.push(arr.slice(i, i + length));
+        }
+        return tempArr;
+    }
+
     createPlaylist() {
         spotifyApi.createPlaylist(this.props.userID, {
             name: this.state.playlistName,
@@ -94,21 +102,32 @@ class PlaylistForm extends React.Component {
             tracksArr.push(...tracksObj[key]);
         }
 
-        fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`, {
+        if (tracksArr.length > 100) {
+            const trackChunks = this.splitArr(tracksArr, 100);
+            trackChunks.forEach(tracks => {
+                this.postItemsToPlaylist(playlistID, this.props.accessToken.access_token, tracks);
+            })
+        } else {
+            this.postItemsToPlaylist(playlistID, this.props.accessToken.access_token, tracksArr);
+        }
+    }
+
+    postItemsToPlaylist(id, token, items) {
+        fetch(`https://api.spotify.com/v1/playlists/${id}/tracks`, {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json',
-                "Authorization": "Bearer " + this.props.accessToken.access_token,
+                "Authorization": "Bearer " + token,
                 "Accept": "application/json"
             },
-            body: JSON.stringify(tracksArr),
+            body: JSON.stringify(items),
         })
-            .then((response) => {
-                // console.log(response);
-            })
-            .catch((error) => {
-                console.log(error)
-            });
+        .then((response) => {
+            // console.log(response);
+        })
+        .catch((error) => {
+            console.log(error)
+        });
     }
 
     render() {
