@@ -1,7 +1,6 @@
 import React from 'react';
 import SpotifyWebApi from "spotify-web-api-js";
-import Modal from './Modal'
-import PlaylistForm from './PlaylistForm';
+import PlaylistModal from './PlaylistModal'
 
 import "./scss/components/search.scss";
 
@@ -29,6 +28,7 @@ class Search extends React.Component {
     this.clearQuery = this.clearQuery.bind(this);
     this.updateNumResults = this.updateNumResults.bind(this);
     this.createPlaylist = this.createPlaylist.bind(this);
+    // this.resetForms = this.resetForms.bind(this);
   }
   
 
@@ -59,6 +59,14 @@ class Search extends React.Component {
     this.setState({ value: "" });
     this.setState({ autocomplete: [] });
   }
+
+  // resetForms(e) {
+  //   e.preventDefault();
+  //   if (!this.state.modal) {
+
+  //   }
+  //   this.setState({ formSuccess: false });
+  // }
 
   updateNumResults(e) {
     this.setState({ resultsCount: Number(e.target.value) });
@@ -215,16 +223,13 @@ class Search extends React.Component {
               <div className="col-12 pbot-3">
                 <div style={{ textAlign: "center" }}>                
                   <button className="btn btn-primary" onClick={this.selectModal}>Add to Playlist +</button>
-                  <Modal 
+                  <PlaylistModal 
                     displayModal={this.state.modal}
-                    closeModal={this.selectModal}>
-                    <PlaylistForm
-                     displayModal={this.state.modal}
-                     closeModal={this.selectModal}
-                     accessToken={this.props.accessToken}
-                     albumTracks={this.state.albumTracks}
-                     userID={this.state.userID} />
-                  </Modal>
+                    closeModal={this.selectModal}
+                    accessToken={this.props.accessToken}
+                    albumTracks={this.state.albumTracks}
+                    userID={this.state.userID} >
+                  </PlaylistModal>
                 </div>
               </div>
               }
