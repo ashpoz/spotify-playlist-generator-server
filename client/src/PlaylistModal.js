@@ -2,9 +2,11 @@ import React from "react";
 
 import SpotifyWebApi from "spotify-web-api-js";
 
+import "./scss/components/modal.scss";
+
 const spotifyApi = new SpotifyWebApi();
 
-class PlaylistForm extends React.Component {
+class PlaylistModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,7 +22,7 @@ class PlaylistForm extends React.Component {
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
-        this.resetForm = this.resetForm.bind(this);
+        this.closeModal = this.closeModal.bind(this);
     }
 
     handleInputChange(e) {
@@ -33,12 +35,6 @@ class PlaylistForm extends React.Component {
         });
     }
 
-
-    resetForm(e) {
-        e.stopPropagation();
-        this.props.closeModal();
-    }
-
     handleSubmit(e) {
         e.preventDefault();
         if (this.handleValidation()) {
@@ -47,6 +43,12 @@ class PlaylistForm extends React.Component {
         } else {
             console.log("There was an error");
         }
+    }
+
+    closeModal(e) {
+        e.stopPropagation();
+        this.props.closeModal();
+        this.setState({ formSuccess: false })
     }
 
     handleValidation() {
@@ -65,7 +67,7 @@ class PlaylistForm extends React.Component {
 
     splitArr(arr, length) {
         let tempArr = [];
-        for(let i = 0; i < arr.length; i += length) {
+        for (let i = 0; i < arr.length; i += length) {
             tempArr.push(arr.slice(i, i + length));
         }
         return tempArr;
@@ -122,13 +124,14 @@ class PlaylistForm extends React.Component {
             },
             body: JSON.stringify(items),
         })
-        .then((response) => {
-            // console.log(response);
-        })
-        .catch((error) => {
-            console.log(error)
-        });
+            .then((response) => {
+                // console.log(response);
+            })
+            .catch((error) => {
+                console.log(error)
+            });
     }
+
 
     render() {
         let content;
@@ -141,7 +144,7 @@ class PlaylistForm extends React.Component {
             )
         } else {
             content = (
-                <form onSubmit={this.handleSubmit}>
+                <form className="Form" onSubmit={this.handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="playlistName">Playlist Name*</label>
                         <input type="text" className="form-control" name="playlistName" id="playlistName" aria-describedby="playlistName" onChange={this.handleInputChange} value={this.state.playlistName} />
@@ -162,12 +165,23 @@ class PlaylistForm extends React.Component {
             )
         }
         return (
-            <div className="Form">
-                <h2 className="modal-content__header">Fill out the following fields</h2>
-                {content}
+            <div
+                className="PlaylistModal modal"
+                onClick={this.closeModal}
+                style={{ display: (this.props.displayModal) ? "block" : "none" }} >
+                <div
+                    className="modal-content"
+                    onClick={e => e.stopPropagation()} >
+                    <span
+                        className="close"
+                        onClick={this.closeModal}>&times;
+                         </span>
+                    <h2 className="modal-content__header">Fill out the following fields</h2>
+                    {content}
+                </div>
             </div>
         );
     }
 }
 
-export default PlaylistForm;
+export default PlaylistModal;
