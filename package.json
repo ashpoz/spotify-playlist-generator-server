@@ -5,7 +5,7 @@
   "version": "0.0.2",
   "private": true,
   "scripts": {
-    "dev": "NODE_ENV=development.local node index.js",
+    "dev": "NODE_ENV=development.local node index.js && npm run start --prefix client",
     "start": "NODE_ENV=production.local node index.js",
     "build": "npm install --prefix client && npm run build --prefix client"
   },
