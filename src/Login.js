@@ -23,7 +23,7 @@ class Login extends React.Component {
               <img className="logo pbot-2" src={spotifyLogo} alt="Logo" />
               <h1>Spotify Playlist Generator</h1>
               <p className="lead pbot-1">Login to Spotify to continue</p>
-              <button onClick={() => this.spotifyLogin()} className="btn btn-primary">Log In</button>
+              <a href="/.netlify/functions/login" className="btn btn-primary">Log In</a>
             </div>
           </div>
         </div>
