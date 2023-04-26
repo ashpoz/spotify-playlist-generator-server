@@ -80,7 +80,6 @@ class PlaylistModal extends React.Component {
             public: true
         })
             .then((response) => {
-                // console.log(response.id)
                 this.setState({ playlistID: response.id })
                 this.setState({ playlistLink: response.external_urls.spotify })
 
@@ -99,6 +98,7 @@ class PlaylistModal extends React.Component {
     }
 
     addItemsToPlaylist(playlistID, tracksObj) {
+        console.log(tracksObj);
         let tracksArr = [];
         for (var key of Object.keys(tracksObj)) {
             tracksArr.push(...tracksObj[key]);
@@ -175,7 +175,7 @@ class PlaylistModal extends React.Component {
                     <span
                         className="close"
                         onClick={this.closeModal}>&times;
-                         </span>
+                    </span>
                     <h2 className="modal-content__header">Fill out the following fields</h2>
                     {content}
                 </div>

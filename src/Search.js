@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import SpotifyWebApi from "spotify-web-api-js";
 import PlaylistModal from './PlaylistModal'
 
@@ -13,7 +13,7 @@ const Search = (props) => {
   const [formSuccess, setFormSuccess] = useState(false);
   const [genres, setGenres] = useState([]);
   const [albums, setAlbums] = useState([]);
-  const [albumIds] = useState([]);
+  const [albumIds, setAlbumIds] = useState([]);
   const [maxResults, setMaxResults] = useState(20);
   const [resultsCount, setResultsCount] = useState(5);
   const [modal, setModal] = useState(false);
@@ -36,13 +36,27 @@ const Search = (props) => {
       .then((albums) => {
         const albumIds = albums.map(album => album.id);
         setAlbums(albums);
-        setAlbumTracks(albumIds);
+        setAlbumIds(albumIds);
+        getAlbumTracks(albumIds);
+        console.log(albumTracks);
       })
+  }
+
+  const autocompleteMatches = (value) => {
+    let counter = 0;
+    let matches = [];
+    genres.forEach(el => {
+      if (el.includes(value) && counter <= 10) {
+        counter++;
+        matches.push(el);
+      }
+    })
+    return matches;
   }
 
   const handleChange = (e) => {
     setValue(e.target.value);
-    setAutocomplete((e.target.value) ? setAutocomplete(e.target.value) : "");
+    setAutocomplete((e.target.value) ? autocompleteMatches(e.target.value) : "");
   }
 
   const handleSubmit = (e) => {
@@ -92,26 +106,23 @@ const Search = (props) => {
   }
 
   const getAlbumTracks = (albumArr) => {
+    let obj = {};
     albumArr.forEach(id => {
       spotifyApi.getAlbumTracks(id)
         .then((response) => {
           const trackURIs = response.items.map(track => track.uri);
-          setAlbumTracks({ [id]: trackURIs });
+          obj[id] = trackURIs;
+          setAlbumTracks(obj);
         })
     })
   }
 
-  const autocompleteMatches = (value) => {
-    let counter = 0;
-    let matches = [];
-    genres.forEach(el => {
-      if (el.toLowerCase().includes(value.toLowerCase()) && counter <= 10) {
-        counter++;
-        matches.push(el);
-      }
-    })
-    return matches;
-  }
+
+  useMemo(() => {
+    getUserID();
+    getGenres();
+  }, []);
+
 
   return (
     <div className="Search container ptop-4 pbot-4">
@@ -125,11 +136,11 @@ const Search = (props) => {
                 {(value) &&
                   <button className="search-input__button" onClick={clearQuery} type="button">&#10005;</button>
                 }
-                {(autocompleteMatches(value).length > 0) &&
+                {(autocomplete.length > 0) &&
                   <div className="autocomplete">
                     <div className="col">
                       <ul>
-                        {autocompleteMatches(value).map((val, index) => {
+                        {autocomplete.map((val, index) => {
                           return (
                             <li key={index}>
                               <button onClick={selectSuggestion} type="button">{val}</button>
