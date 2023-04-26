@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
 import "./scss/components/nav.scss";
 
 import githubLogo from "./images/github-logo-white.png";
 
-function Nav() {
+const Nav = () => {
     return (
         <nav className="navbar navbar-dark">
             <a className="navbar-brand" href="/">Spotify Playlist Generator</a>

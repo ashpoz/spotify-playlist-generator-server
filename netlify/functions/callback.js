@@ -1,4 +1,6 @@
 const axios = require("axios");
+const cookie = require('cookie')
+
 const {
   clientId,
   clientSecret,
@@ -10,9 +12,8 @@ exports.handler = async function (event, context) {
   const { code, state } = event.queryStringParameters || null;
 
   // retrieve the auth state set on the cookie
-  const storedState = event.headers.cookie
-    ? event.headers.cookie.split(";")[0].split("=")[1]
-    : null;
+  const cookies = cookie.parse(event.headers.cookie);
+  const storedState = cookies.spotify_auth_state;
 
   if (state === null || state !== storedState) {
     return {
@@ -39,20 +40,27 @@ exports.handler = async function (event, context) {
 
     try {
       const authorizeToken = await axios(authOptions);
-      const { expires_in, access_token, refresh_token } = await authorizeToken.data;
+      const { expires_in, access_token } = await authorizeToken.data;
       const getAccountAuth = {
         method: "GET",
         url: "https://api.spotify.com/v1/me",
         headers: { "Authorization": "Bearer " + access_token },
       };
+
       await axios(getAccountAuth);
 
-      // TODO, set http cookie instead of passing params
       return {
         statusCode: 302, // must be a redirect status code or the client won't be redirected
         headers: {
-          Location: `${siteUrl}?access_token=${access_token}&refresh_token=${refresh_token}&expires_in=${expires_in}`,
+          Location: siteUrl,
           "Cache-Control": "no-cache", // Disable caching of this response
+          "Set-Cookie": [
+            cookie.serialize("spotify_access_token", access_token, {
+              // httpOnly: true,
+              maxAge: expires_in,
+              path: "/",
+            }),
+          ]
         },
       }
     } catch (err) {

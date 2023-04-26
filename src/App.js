@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import SpotifyWebApi from "spotify-web-api-js";
 
 import Nav from "./Nav";
@@ -9,71 +9,23 @@ import "./scss/layout/layout.scss";
 
 const spotifyApi = new SpotifyWebApi();
 
-
 const App = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const searchParams = new URLSearchParams(window.location);
-  const token = searchParams.get("access_token");
+  const getCookieValue = (cookieName) => {
+    return document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(`${cookieName}=`))
+      ?.split("=")[1];
+  }
+  const accessToken = getCookieValue("spotify_access_token");
 
-  console.log(token);
+  const [loggedIn] = useState(accessToken ? true : false);
 
-  // useEffect(() => {
-
-  // });
-  return (
-    <Login />
-  )
+  if (loggedIn) {
+    spotifyApi.setAccessToken(accessToken);
+    return <><Nav /><Search accessToken={accessToken} /></>;
+  } else {
+    return <Login />;
+  }
 }
 
 export default App;
-
-// class App extends React.Component {
-//   constructor() {
-//     super();
-//     const params = this.getHashParams();
-//     const token = params.access_token;
-//     if (token) {
-//       spotifyApi.setAccessToken(token);
-//     }
-//     this.state = {
-//       loggedIn: token ? true : false,
-//       accessToken: params
-//     }
-//   }
-
-//   getHashParams() {
-//     var hashParams = {};
-//     var e, r = /([^&;=]+)=?([^&;]*)/g,
-//       q = window.location.hash.substring(1);
-//     e = r.exec(q)
-//     while (e) {
-//       hashParams[e[1]] = decodeURIComponent(e[2]);
-//       e = r.exec(q);
-//     }
-//     return hashParams;
-//   }
-//   spotifyLogin() {
-//     fetch("http://localhost:5000/login", {
-//       mode: "no-cors"
-//     })
-//       .then(response => {
-//         console.log(response);
-//       })
-//   }
-
-//   render() {
-//     let renderComponent;
-
-//     if (this.state.loggedIn) {
-//       renderComponent = <><Nav /><Search accessToken={this.state.accessToken} /></>;
-//     } else {
-//       renderComponent = <Login />;
-//     }
-//     return (
-//       <div className="App">
-//         {renderComponent}
-//       </div>
-//     );
-//   }
-// }
-
