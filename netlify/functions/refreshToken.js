@@ -4,7 +4,7 @@
  */
 
 const axios = require("axios");
-const { clientId, clientSecret, tokenPath } = require("./utils/auth-config");
+const { clientId, clientSecret, tokenPath } = require("./utils/authConfig");
 
 /* Function to handle refreshing an access token */
 exports.handler = async function (event, context) {
