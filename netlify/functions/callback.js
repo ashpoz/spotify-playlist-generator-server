@@ -54,13 +54,11 @@ exports.handler = async function (event, context) {
         headers: {
           Location: siteUrl,
           "Cache-Control": "no-cache", // Disable caching of this response
-          "Set-Cookie": [
-            cookie.serialize("spotify_access_token", access_token, {
-              // httpOnly: true,
-              maxAge: expires_in,
-              path: "/",
-            }),
-          ]
+          "Set-Cookie": cookie.serialize("spotify_access_token", access_token, {
+            // httpOnly: true,
+            maxAge: expires_in,
+            path: "/",
+          }),
         },
       }
     } catch (err) {
