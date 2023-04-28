@@ -38,7 +38,6 @@ const Search = (props) => {
         setAlbums(albums);
         setAlbumIds(albumIds);
         getAlbumTracks(albumIds);
-        console.log(albumTracks);
       })
   }
 
@@ -64,7 +63,7 @@ const Search = (props) => {
     setFormSuccess(true);
     getRecs(value);
     setAutocomplete([]);
-    setAlbumTracks({});
+    // setAlbumTracks({});
   }
 
   const selectSuggestion = (e) => {
@@ -85,10 +84,6 @@ const Search = (props) => {
   }
 
   const selectModal = (info) => setModal(!modal);
-
-  const createPlaylist = (e) => {
-    console.log(e.target);
-  }
 
   const getGenres = () => {
     spotifyApi.getAvailableGenreSeeds()
