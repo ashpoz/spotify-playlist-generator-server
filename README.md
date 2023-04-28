@@ -6,4 +6,4 @@ During COVID, my friends and I got obsessed with exploring genres we weren't fam
 
 This app is built using the Spotify Authorization Flow https://github.com/spotify/web-api-auth-examples
 
-You can view the app in action here: https://spotify-playlist-generator.up.railway.app
+You can view the app in action here: https://spotify-album-playlist-generator.netlify.app/
