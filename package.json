@@ -14,8 +14,8 @@
     "micromodal": "^0.4.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "5.0.1",
-    "sass": "^1.57.1",
+    "react-scripts": "^5.0.1",
+    "sass": "^1.62.1",
     "spotify-web-api-js": "^1.5.2"
   },
   "scripts": {
